@@ -3,7 +3,7 @@ from flask_restful import Api, Resource
 
 from app.common.error_handling import ObjectNotFound
 from .schemas import FilmSchema
-from ..models import Film, Actor
+from ...models import Film, Actor
 
 films_v1_0_bp = Blueprint('films_v1_0_bp', __name__)
 film_schema = FilmSchema()

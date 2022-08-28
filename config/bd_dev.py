@@ -1,9 +1,9 @@
-db = "registros_patrimonial"
-usuario = "registros_patrimonial"
-nombre_bd = "registros_patrimonial"
-contrasenia = "8Fcy0~6c8"
+db = "crm"
+usuario = "ramaffei"
+nombre_bd = "crm"
+contrasenia = "GFA3jRB1BhE8X5F"
 bd_type = "mysql+pymysql"
-host = "190.60.174.157"
+host = "45.162.169.65"
 
 SQLALCHEMY_DATABASE_URI = f'{bd_type}://{usuario}:{contrasenia}@{host}/{nombre_bd}'
 

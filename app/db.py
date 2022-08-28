@@ -2,9 +2,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class BaseModel:
+class BaseModelMixin:
     def save(self):
         db.session.add(self)
+        db.session.commit()
+    
+    def update(self, data: dict):
+        for k, v in data.items():
+            print(v)
+            setattr(self, k, v)
         db.session.commit()
 
     def delete(self):
