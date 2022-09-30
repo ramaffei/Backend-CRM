@@ -17,7 +17,7 @@ class Turno(db.Model, BaseModelMixin):
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
 
    presupuesto = db.relationship("Presupuesto", lazy='joined',backref='turnos')
-   venta = db.relationship("Venta", lazy='joined', back_populates="turno")
+   venta = db.relationship("Venta", lazy='joined',backref='turnos')
    cliente = db.relationship("Cliente", lazy='joined', back_populates="turnos")
    usuario = db.relationship("Usuario", lazy='joined', back_populates="turnos")
 
