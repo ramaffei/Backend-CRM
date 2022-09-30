@@ -4,4 +4,4 @@ from flask_cors import CORS
 
 ma = Marshmallow()
 migrate = Migrate()
-cors = CORS(resources={r'/*': {'origins':'*'}})
+cors = CORS()

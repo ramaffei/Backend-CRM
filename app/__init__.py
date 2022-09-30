@@ -16,7 +16,7 @@ def create_app(settings_module):
    db.init_app(app)
    ma.init_app(app)
    migrate.init_app(app, db)
-   cors.init_app(app)
+   cors.init_app(app, resources={r'/*': {'origins':'*'}})
 
    # Captura todos los errores 404
    Api(app, catch_all_404s=True)
