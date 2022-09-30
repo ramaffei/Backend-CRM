@@ -31,7 +31,8 @@ def create_app(settings_module):
    app.register_blueprint(ventas_v1_bp)
 
    # Registra manejadores de errores personalizados
-   #register_error_handlers(app)
+   if settings_module is not 'config.local':
+      register_error_handlers(app)
    return app
 
 def register_error_handlers(app):
