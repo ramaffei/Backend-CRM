@@ -6,7 +6,8 @@ from app.modules.clientes.v1_0.resources import clientes_v1_0_bp
 from app.modules.empleados.v1_0.resources import empleados_v1_0_bp
 from app.modules.turnos.v1_0.resources import turnos_v1_bp
 from app.modules.ventas.v1_0.resources import ventas_v1_bp
-from .ext import ma, migrate, cors
+from .ext import ma, migrate
+from flask_cors import CORS
 
 def create_app(settings_module):
    app = Flask(__name__)
@@ -16,7 +17,7 @@ def create_app(settings_module):
    db.init_app(app)
    ma.init_app(app)
    migrate.init_app(app, db)
-   cors.init_app(app, resources={r'/*': {'origins':'*'}})
+   cors = CORS(app, resources={r'/*': {'origins':'*'}})
 
    # Captura todos los errores 404
    Api(app, catch_all_404s=True)
