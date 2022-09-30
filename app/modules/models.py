@@ -99,9 +99,7 @@ class Venta(db.Model, BaseModelMixin):
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
    presupuesto_id = db.Column(db.Integer, db.ForeignKey('presupuestos.id'))
-   #turno_id = db.Column(db.Integer, db.ForeignKey('turnos.id'))
 
-   turno = db.relationship("Turno", lazy='joined', back_populates="venta")
    cliente = db.relationship("Cliente", lazy='joined')
    usuario = db.relationship("Usuario", lazy='joined')
    empleado = db.relationship("Empleado", lazy='joined')
