@@ -41,7 +41,6 @@ class EmpleadoTodos(Resource):
 
       for horario in horarios:
          args = Horario(**horario)
-         print(args)
          empleado.horarios.append(args)
 
       empleado.save()
@@ -100,7 +99,6 @@ class EmpleadoRecurso(Resource):
             horario = [h for h in empleado.horarios if h.dia == kwargs['dia']]
 
             if len(horario) == 1:
-               print(horario)
                horario[0].delete
                return horarios_schema.dump(horario[0])
             else:
