@@ -12,7 +12,7 @@ empleados_schema = EmpleadoSchema()
 horarios_schema = HorarioSchema()
 
 api = Api(empleados_v1_0_bp)
-CORS(empleados_v1_0_bp)
+CORS(empleados_v1_0_bp, resources=r'/api/empleados/*')
 class HorarioTodos(Resource):
    def get(self):
       horarios = Horario.get_all()
