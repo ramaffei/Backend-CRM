@@ -1,5 +1,6 @@
 from itertools import groupby
 from flask import request, Blueprint
+from flask_cors import CORS
 from flask_restful import Api, Resource
 from sqlalchemy import func
 from app.common.error_handling import ObjectNotFound
@@ -11,7 +12,7 @@ empleados_schema = EmpleadoSchema()
 horarios_schema = HorarioSchema()
 
 api = Api(empleados_v1_0_bp)
-
+CORS(empleados_v1_0_bp)
 class HorarioTodos(Resource):
    def get(self):
       horarios = Horario.get_all()
