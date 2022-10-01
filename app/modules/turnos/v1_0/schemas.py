@@ -5,8 +5,8 @@ from app.modules.empleados.v1_0.schemas import EmpleadoSchema
 
 class TurnoSchema(ma.Schema):
    empleados = fields.Nested(EmpleadoSchema, many=True,  exclude=('horarios',))
-   #fecha_inicio = fields.DateTime('%d-%m-%Y %H:%M:%S')
-   #fecha_fin = fields.DateTime('%d-%m-%Y %H:%M:%S')
+   fecha_inicio = fields.DateTime()
+   fecha_fin = fields.DateTime()
    class Meta:
       fields = ('id','fecha_inicio','fecha_fin','descripcion','presupuesto_id','venta_id','cliente_id','estado_turno','usuario_id','presupuesto','venta','empleados','cliente','usuario')
       unknown = EXCLUDE

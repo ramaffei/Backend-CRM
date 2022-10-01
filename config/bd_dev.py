@@ -1,7 +1,7 @@
 db = "crm"
 usuario = "ramaffei"
 nombre_bd = "crm"
-contrasenia = "GFA3jRB1BhE8X5F"
+contrasenia = r"52866Jam"
 bd_type = "mysql+pymysql"
 host = "45.162.169.65"
 

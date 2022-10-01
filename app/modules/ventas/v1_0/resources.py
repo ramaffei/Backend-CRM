@@ -73,21 +73,22 @@ class PresupuestoListResource(Resource):
    
    def post(self):
       data = transformData(request.get_json())
+      items_dict = data.get('items', [])
       presupuesto_dict = presupuesto_schema.load(data)
-            
+ 
       items = []
-      if presupuesto_dict.get('items') is not None:
-         for item_dict in presupuesto_dict.get('items'):
-            if item_dict.get('item_id') is not None:
-               item = Item.get_by_id(item_dict.get('item_id'))
-               itemPresupuesto = ItemPresupuesto(item = item, **item_dict)
-            else:
-               itemPresupuesto = ItemPresupuesto(**item_dict)
-            items.append(itemPresupuesto)
-         del presupuesto_dict['items']
+
+      for item_dict in items_dict:
+         if item_dict.get('item_id') is not None:
+            item = Item.get_by_id(item_dict.get('item_id'))
+            itemPresupuesto = ItemPresupuesto(item = item, **item_dict)
+         else:
+            itemPresupuesto = ItemPresupuesto(**item_dict)
+         items.append(itemPresupuesto)
 
       presupuesto = Presupuesto(**presupuesto_dict)
       presupuesto.items = items
+      print(presupuesto.items)
       presupuesto.save()
       resp = presupuesto_schema.dump(presupuesto)
       return resp, 201
@@ -97,6 +98,7 @@ class PresupuestoResource(Resource):
       presupuesto = Presupuesto.get_by_id(presupuesto_id)
       if presupuesto is None:
          raise ObjectNotFound(f'No se encuentra presupuesto con es id {presupuesto_id}')
+      print(presupuesto.items)
       #print(presupuesto.turnos)
       resp = presupuesto_schema.dump(presupuesto)
       return resp

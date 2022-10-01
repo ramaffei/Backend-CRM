@@ -32,14 +32,14 @@ def create_app(settings_module):
    app.register_blueprint(ventas_v1_bp)
 
    # Registra manejadores de errores personalizados
-   if settings_module is not 'config.local':
+   if settings_module != 'config.local':
       register_error_handlers(app)
    return app
 
 def register_error_handlers(app):
    @app.errorhandler(Exception)
    def handle_exception_error(e):
-      return jsonify({'msg': 'Internal server error'}), 500
+      return jsonify({'msg': f'Internal server error: {e}'}), 500
 
    @app.errorhandler(405)
    def handle_405_error(e):
