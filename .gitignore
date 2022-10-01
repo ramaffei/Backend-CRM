@@ -152,4 +152,5 @@ cython_debug/
 #.idea/
 
 # Archivos de config server dev
-/dev_config
+dev_config/
+migrations/
