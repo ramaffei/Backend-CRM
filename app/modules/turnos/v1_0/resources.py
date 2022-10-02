@@ -52,6 +52,13 @@ class TurnoResource(Resource):
       turno.update(turnos_dict)
       resp = turnosSchema.dump(turno)
       return resp
+   
+   def delete(self, turno_id):
+      turno = Turno.get_by_id(turno_id)
+      if turno is None:
+         raise ObjectNotFound('El turno no existe')
+      turno.delete()
+      return turnosSchema.dump(turno)
 
 def crearRelacionEmpleado(empleado: dict, turno: Turno) -> None:
    id_empleado = empleado.get('id')

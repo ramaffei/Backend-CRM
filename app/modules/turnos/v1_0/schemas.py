@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 from marshmallow import fields, EXCLUDE, validates, validates_schema, ValidationError
 from app.ext import ma
+from app.modules.clientes.v1_0.schemas import ClienteSchema
 from app.modules.empleados.v1_0.schemas import EmpleadoSchema
 
 class TurnoSchema(ma.Schema):
    empleados = fields.Nested(EmpleadoSchema, many=True,  exclude=('horarios',))
+   cliente = fields.Nested(ClienteSchema, exclude=('turnos',))
    fecha_inicio = fields.DateTime()
    fecha_fin = fields.DateTime()
    class Meta:
-      fields = ('id','fecha_inicio','fecha_fin','descripcion','presupuesto_id','venta_id','cliente_id','estado_turno','usuario_id','presupuesto','venta','empleados','cliente','usuario')
+      fields = ('id','fecha_inicio','fecha_fin','descripcion','presupuesto_id','venta_id','cliente_id','estado_turno','usuario_id','empleados','cliente')
       unknown = EXCLUDE
       ordered = True
 
