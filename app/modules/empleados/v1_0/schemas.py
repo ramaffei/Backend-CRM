@@ -19,4 +19,3 @@ class HorarioSchema(ma.Schema):
       fields = ('horario_id','dia','hora_entrada','hora_salida', 'empleado')
       unknown = EXCLUDE
       ordered = True
-      dump_only = ('dia',)
