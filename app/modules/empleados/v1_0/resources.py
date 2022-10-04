@@ -25,7 +25,28 @@ class HorarioTodos(Resource):
          dic[k] = sorted(list(v), key=lambda x: x['hora_entrada'])
       
       return dic
+class HorarioRecurso(Resource):
+   def get(self, horario_id):
+      horario = Horario.get_by_id(horario_id)
+      if horario is None:
+         raise ObjectNotFound('El horario solicitado no existe')
+      return horarios_schema.dump(horario)
 
+   def put(self, horario_id):
+      horario = Horario.get_by_id(horario_id)
+      if horario is None:
+         raise ObjectNotFound('El horario no existe')
+      data = request.get_json()
+      horario_dict = horarios_schema.load(data)
+      horario.update(horario_dict)
+      return horarios_schema.dump(horario)
+
+   def delete(self, horario_id):
+      horario = Horario.get_by_id(horario_id)
+      if horario is None:
+         raise ObjectNotFound('El horario no existe')
+      horario.delete()
+      return horarios_schema.dump(horario)
 class EmpleadoTodos(Resource):
    def get(self):
       empleados = Empleado.get_all()
@@ -112,5 +133,7 @@ class EmpleadoRecurso(Resource):
 api.add_resource(EmpleadoTodos, '/api/v1.0/empleados/', endpoint='empleados')
 
 api.add_resource(HorarioTodos, '/api/v1.0/empleados/horarios/', endpoint='horarios')
+
+api.add_resource(HorarioRecurso, '/api/v1.0/empleados/horarios/<horario_id>', endpoint='horario')
 
 api.add_resource(EmpleadoRecurso, '/api/v1.0/empleados/<int:empleado_id>', endpoint='empleado')

@@ -33,11 +33,12 @@ def create_app(settings_module):
 
    # Registra manejadores de errores personalizados
    if settings_module != 'config.local':
+      print('configurando error handlings')
       register_error_handlers(app)
    return app
 
 def register_error_handlers(app):
-   @app.errorhandler(Exception)
+   @app.errorhandler(500)
    def handle_exception_error(e):
       return jsonify({'msg': f'Internal server error: {e}'}), 500
 

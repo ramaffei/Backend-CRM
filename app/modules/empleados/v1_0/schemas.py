@@ -12,17 +12,11 @@ class EmpleadoSchema(ma.Schema):
       unknown = EXCLUDE
       ordered = True
    
-"""    @post_load
-   def make_object(self, data, **kwargs):
-      empleado = Empleado.simple_filter(**data)
-      if empleado is None:
-         empleado = Empleado(**data)
-      return empleado """
-
 class HorarioSchema(ma.Schema):
    empleado = fields.Nested('EmpleadoSchema', exclude=('horarios',))
-   #horario_id = fields.Int(attribute = 'id')
+   horario_id = fields.Int(attribute = 'id')
    class Meta:
       fields = ('horario_id','dia','hora_entrada','hora_salida', 'empleado')
       unknown = EXCLUDE
-      #ordered = True
+      ordered = True
+      dump_only = ('dia',)
