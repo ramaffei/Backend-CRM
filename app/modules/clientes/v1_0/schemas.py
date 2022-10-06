@@ -3,6 +3,6 @@ from app.ext import ma
 
 class ClienteSchema(ma.Schema):
    class Meta:
-      fields = ('id','nombre','apellido','mail','fecha_nac','telefono','facebook','instagram','twitter','turnos')
+      fields = ('id','nombre','apellido','mail','fecha_nac','telefono','facebook','instagram','twitter')
       unknown = EXCLUDE
       ordered = True

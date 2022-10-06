@@ -4,7 +4,8 @@ from flask_restful import Api, Resource
 from sqlalchemy import func
 from app.common.error_handling import ObjectNotFound
 from .schemas import EmpleadoSchema, HorarioSchema
-from ...models import Empleado, Horario
+from ...models import Empleado, Horario, TurnoEmpleado
+from app.modules.turnos.v1_0.schemas import TurnoSchema
 
 empleados_v1_0_bp = Blueprint('empleados_v1_0_bp', __name__)
 empleados_schema = EmpleadoSchema()
@@ -86,49 +87,44 @@ class EmpleadoRecurso(Resource):
       horarios = empleados_dict.get('horarios', [])
       del empleados_dict['horarios']
 
-      for kwargs in horarios:
-         if not kwargs.get('dia', False):
-            raise ObjectNotFound('Debes informar un dia para el horario que quieres guardar')
-
-         horario = [h for h in empleado.horarios if h.dia == kwargs['dia']]
-
-         if len(horario) == 1:
-            horario_dict = horarios_schema.load(kwargs)
-            horario[0].update(horario_dict)
-         else:   
-            horario = Horario(**kwargs)
-            empleado.horarios.append(horario)
-
+      for h in horarios:
+         horario_id = h.get('id')
+         if horario_id is not None:
+            horario = Horario.get_by_id(horario_id)
+            if horario is None:
+               raise ObjectNotFound(f'El horario {horario_id} no existe')
+            if horario.empleado_id != empleado_id:
+               raise ObjectNotFound(f'El horario {horario_id} no corresponde al empleado {empleado_id}')
+            cambios = horario.buscar_cambios(**h)
+            if len(cambios) > 0:
+               horario.update(cambios) 
+         else:
+            horario_empleado = Horario(**horario)
+            empleado.horarios.append(horario_empleado)
       empleado.update(empleados_dict)
       resp = empleados_schema.dump(empleado)
       return resp
 
    def delete(self, empleado_id):
-      data = request.get_json() or {}
       empleado = Empleado.get_by_id(empleado_id)
       if empleado is None:
          raise ObjectNotFound('El empleado no existe')
 
-      if data is not None and data.get('horarios', False):
-         empleados_dict = empleados_schema.load(data)
-         horarios = empleados_dict.get('horarios', [])
-         del empleados_dict['horarios']
-         for kwargs in horarios:
-            if not kwargs.get('dia', False):
-               raise ObjectNotFound('Debes informar un dia para el horario que quieres eliminar')
-
-            horario = [h for h in empleado.horarios if h.dia == kwargs['dia']]
-
-            if len(horario) == 1:
-               horario[0].delete
-               return horarios_schema.dump(horario[0])
-            else:
-               raise ObjectNotFound('No se encuentra el dia a eliminar asignado a este usuario')
+      if hasattr(empleado, 'horarios'):
+         for horario in empleado.horarios:
+            horario.delete()
 
       empleado.delete()
       resp = empleados_schema.dump(empleado)
       return resp
 
+class EmpleadoTurnoRecurso(Resource):
+   def get(self, empleado_id):
+      turnos_empleados = TurnoEmpleado.simple_filter_all(id_empleado = empleado_id)
+      turnos = [turno.turno for turno in turnos_empleados if turno.turno is not None]
+      return TurnoSchema().dump(turnos, many=True)
+
+api.add_resource(EmpleadoTurnoRecurso, '/api/v1.0/empleados/<int:empleado_id>/turnos', endpoint='turnos_empleado')
 
 api.add_resource(EmpleadoTodos, '/api/v1.0/empleados/', endpoint='empleados')
 

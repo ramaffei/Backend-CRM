@@ -13,7 +13,11 @@ api = Api(turnos_v1_bp)
 
 class TurnoListResource(Resource):
    def get(self):
-      turno = Turno.get_all()
+      args = request.args.to_dict()
+      if args:
+         turno = Turno.simple_filter_all(**args)
+      else:
+         turno = Turno.get_all()
       result = turnosSchema.dump(turno, many=True)
       return result
 

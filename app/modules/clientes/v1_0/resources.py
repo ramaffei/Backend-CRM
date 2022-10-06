@@ -42,6 +42,14 @@ class ClienteRecurso(Resource):
       resp = clientes_schema.dump(cliente)
       return resp
 
+   def delete(self, cliente_id):
+      cliente = Cliente.get_by_id(cliente_id)
+      if cliente is None:
+         raise ObjectNotFound('El cliente no existe')
+
+      cliente.delete()
+      return clientes_schema.dump(cliente)
+
 api.add_resource(ClienteTodos, '/api/v1.0/clientes/', endpoint='clientes')
 
 api.add_resource(ClienteRecurso, '/api/v1.0/clientes/<int:cliente_id>', endpoint='cliente')
