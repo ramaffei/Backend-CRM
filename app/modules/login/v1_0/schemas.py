@@ -1,5 +1,5 @@
 from marshmallow import fields
-from app.ext import ma
+from app.ext import BaseSchema
 
-class FilmSchema(ma.Schema):
+class FilmSchema(BaseSchema):
    pass

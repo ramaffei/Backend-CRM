@@ -81,14 +81,13 @@ class EmpleadoRecurso(Resource):
       empleado = Empleado.get_by_id(empleado_id)
       if empleado is None:
          raise ObjectNotFound('El empleado no existe')
+      
       data = request.get_json()
-      empleados_dict = empleados_schema.load(data)
-
-      horarios = empleados_dict.get('horarios', [])
-      del empleados_dict['horarios']
-
+      horarios = data.get('horarios', [])
+      del data['horarios']
+      
       for h in horarios:
-         horario_id = h.get('id')
+         horario_id = h.get('horario_id')
          if horario_id is not None:
             horario = Horario.get_by_id(horario_id)
             if horario is None:
@@ -97,10 +96,14 @@ class EmpleadoRecurso(Resource):
                raise ObjectNotFound(f'El horario {horario_id} no corresponde al empleado {empleado_id}')
             cambios = horario.buscar_cambios(**h)
             if len(cambios) > 0:
+               cambios = horarios_schema.load(cambios)
                horario.update(cambios) 
          else:
-            horario_empleado = Horario(**horario)
+            cambios = horarios_schema.load(h)
+            horario_empleado = Horario(**cambios)
             empleado.horarios.append(horario_empleado)
+
+      empleados_dict = empleados_schema.load(data)
       empleado.update(empleados_dict)
       resp = empleados_schema.dump(empleado)
       return resp

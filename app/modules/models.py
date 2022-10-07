@@ -54,23 +54,7 @@ class Horario(db.Model, BaseModelMixin):
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
 
    empleado = db.relationship("Empleado", lazy='joined', back_populates="horarios")
-   __table_args__ = (db.UniqueConstraint('dia', 'empleado_id', name='_dia_empleado'),)
    
-""" class DiaTrabajado(db.Model, BaseModelMixin):
-   __tablename__ = 'dias_trabajados'
-   id = db.Column(db.Integer, primary_key=True)
-   fecha_inicio = db.Column(db.DateTime)
-   fecha_fin = db.Column(db.DateTime)
-   empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
-   
-   empleado = db.relationship("Empleado", back_populates="horarios")  
-
-   def __repr__(self):
-      return f'Horario({self.id})'
-
-   def __str__(self):
-      return f'Inicio: {self.fecha_inicio} Fin:{self.fecha_fin}'
- """
 """
 MODULO VENTAS
 """
