@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, got_request_exception, jsonify
 from flask_restful import Api
-from app.common.error_handling import ObjectNotFound, AppErrorBaseClass
+from app.common.error_handling import InvalidAPIUsage, ObjectNotFound, AppErrorBaseClass
+from app.common.errors import custom_api_error_handler
 from app.db import db
 from app.modules.clientes.v1_0.resources import clientes_v1_0_bp
 from app.modules.empleados.v1_0.resources import empleados_v1_0_bp
@@ -12,7 +13,7 @@ from flask_cors import CORS
 def create_app(settings_module):
    app = Flask(__name__)
    app.config.from_object(settings_module)
-
+   got_request_exception.connect(custom_api_error_handler, app)
    # Inicializa las extensiones
    db.init_app(app)
    ma.init_app(app)
@@ -20,7 +21,7 @@ def create_app(settings_module):
    cors = CORS(app, resources={r'/*': {'origins':'*'}})
 
    # Captura todos los errores 404
-   Api(app, catch_all_404s=True)
+   #Api(app, catch_all_404s=True)
 
    # Deshabilita el modo estricto de acabado de una URL con /
    app.url_map.strict_slashes = False
@@ -33,18 +34,18 @@ def create_app(settings_module):
 
    # Registra manejadores de errores personalizados
    if settings_module != 'config.local':
-      print('configurando error handlings')
       register_error_handlers(app)
    return app
 
 def register_error_handlers(app):
-   @app.errorhandler(500)
-   def handle_exception_error(e):
-      return jsonify({'msg': f'Internal server error: {e}'}), 500
+   @app.errorhandler(Exception)
+   def handle_500_error(e):
+      return jsonify({'msg': f'Error: {e}'}), 500
 
    @app.errorhandler(405)
    def handle_405_error(e):
-      return jsonify({'msg': 'Method not allowed'}), 405
+      print('error 405')
+      return jsonify({'msg': 'Metodo no permitido'}), 405
 
    @app.errorhandler(403)
    def handle_403_error(e):
@@ -52,7 +53,7 @@ def register_error_handlers(app):
 
    @app.errorhandler(404)
    def handle_404_error(e):
-      return jsonify({'msg': 'Not Found error'}), 404
+      return jsonify({'msg': 'URL no encontrada'}), 404
 
    @app.errorhandler(AppErrorBaseClass)
    def handle_app_base_error(e):
