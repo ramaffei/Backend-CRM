@@ -22,7 +22,7 @@ class TurnoSchema(BaseSchema):
 
    @validates("fecha_inicio")
    def validar_fechaInicio(self, value):
-      if value < datetime.now():
+      if (value + timedelta(seconds=10)) < datetime.now():
          raise ValidationError("La fecha no puede ser anterior a la fecha actual")
    
    @validates_schema

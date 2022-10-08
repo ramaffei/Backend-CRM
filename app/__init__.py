@@ -13,7 +13,7 @@ from flask_cors import CORS
 def create_app(settings_module):
    app = Flask(__name__)
    app.config.from_object(settings_module)
-   got_request_exception.connect(custom_api_error_handler, app)
+   
    # Inicializa las extensiones
    db.init_app(app)
    ma.init_app(app)
@@ -34,6 +34,7 @@ def create_app(settings_module):
 
    # Registra manejadores de errores personalizados
    if settings_module != 'config.local':
+      got_request_exception.connect(custom_api_error_handler, app)
       register_error_handlers(app)
    return app
 
@@ -44,7 +45,6 @@ def register_error_handlers(app):
 
    @app.errorhandler(405)
    def handle_405_error(e):
-      print('error 405')
       return jsonify({'msg': 'Metodo no permitido'}), 405
 
    @app.errorhandler(403)

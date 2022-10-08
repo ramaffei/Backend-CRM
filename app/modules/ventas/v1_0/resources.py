@@ -79,16 +79,21 @@ class PresupuestoListResource(Resource):
       items = []
 
       for item_dict in items_dict:
-         if item_dict.get('item_id') is not None:
-            item = Item.get_by_id(item_dict.get('item_id'))
+         item_id = item_dict.get('item_id')
+         if item_id is not None:
+            item = Item.get_by_id(item_id)
+            if item is None:
+               raise ObjectNotFound(f'No se encuentra item con id {item_id}')
             itemPresupuesto = ItemPresupuesto(item = item, **item_dict)
          else:
+            item_dict = item_rel_schema.load(item_dict)
+
             itemPresupuesto = ItemPresupuesto(**item_dict)
          items.append(itemPresupuesto)
 
       presupuesto = Presupuesto(**presupuesto_dict)
       presupuesto.items = items
-      print(presupuesto.items)
+
       presupuesto.save()
       resp = presupuesto_schema.dump(presupuesto)
       return resp, 201
@@ -98,8 +103,7 @@ class PresupuestoResource(Resource):
       presupuesto = Presupuesto.get_by_id(presupuesto_id)
       if presupuesto is None:
          raise ObjectNotFound(f'No se encuentra presupuesto con es id {presupuesto_id}')
-      print(presupuesto.items)
-      #print(presupuesto.turnos)
+
       resp = presupuesto_schema.dump(presupuesto)
       return resp
    
@@ -247,23 +251,28 @@ class VentaListResource(Resource):
    
    def post(self):
       data = transformData(request.get_json())
+      items_dict = data.get('items', [])
       venta_dict = venta_schema.load(data)
-            
+ 
       items = []
-      if venta_dict.get('items') is not None:
-         for item_dict in venta_dict.get('items'):
-            if item_dict.get('item_id') is not None:
-               item = Item.get_by_id(item_dict.get('item_id'))
-               itemVenta = ItemVenta(item = item, **item_dict)
-            else:
-               itemVenta = ItemVenta(**item_dict)
-            items.append(itemVenta)
-         del venta_dict['items']
+
+      for item_dict in items_dict:
+         item_id = item_dict.get('item_id')
+         if item_id is not None:
+            item = Item.get_by_id(item_id)
+            if item is None:
+               raise ObjectNotFound(f'No se encuentra item con id {item_id}')
+            itemVenta = ItemVenta(item = item, **item_dict)
+         else:
+            item_dict = item_rel_schema.load(item_dict)
+
+            itemVenta = ItemVenta(**item_dict)
+         items.append(itemVenta)
 
       venta = Venta(**venta_dict)
       venta.items = items
       venta.save()
-      resp = venta_schema.dump(venta)
+      resp = presupuesto_schema.dump(venta)
       return resp, 201
 
 class VentaResource(Resource):
@@ -271,7 +280,7 @@ class VentaResource(Resource):
       venta = Venta.get_by_id(venta_id)
       if venta is None:
          raise ObjectNotFound(f'No se encuentra venta con es id {venta_id}')
-      #print(venta.turnos)
+
       resp = venta_schema.dump(venta)
       return resp
    
@@ -350,7 +359,6 @@ class VentaItemsListResource(Resource):
       item_venta = ItemVenta.simple_filter_all(venta_id = venta_id)
       if item_venta is None:
          raise ObjectNotFound(f'No se encuentran el items en el venta con id {venta_id}')
-      print('item',item_venta)
       return item_rel_schema.dump(item_venta, many=True)
 
    def post(self, venta_id):

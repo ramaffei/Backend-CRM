@@ -1,4 +1,5 @@
 from marshmallow import fields, EXCLUDE
+from pkg_resources import require
 from app.ext import BaseSchema
 from app.modules.clientes.v1_0.schemas import ClienteSchema
 from app.modules.empleados.v1_0.schemas import EmpleadoSchema
@@ -10,6 +11,7 @@ class VentaSchema(BaseSchema):
    empleado = fields.Nested(EmpleadoSchema, exclude=('horarios',))
    turnos = fields.Nested(TurnoSchema, many=True, exclude= ('presupuesto_id','venta_id','cliente_id','usuario_id','empleados','cliente'))
    items = fields.Nested("ItemPresSchema", many=True)
+   fecha = fields.DateTime()
    class Meta:
       fields = ("id","fecha","turnos","cliente","usuario","empleado","items", "total_importe", "cliente_id","empleado_id", "presupuesto_id", "usuario_id")
       load_only = ("cliente_id", "empleado_id", "usuario_id")
@@ -25,6 +27,7 @@ class PresupuestoSchema(BaseSchema):
    turnos = fields.Nested(TurnoSchema, many=True, exclude= ('presupuesto_id','venta_id','cliente_id','usuario_id','empleados','cliente'))
    #venta = fields.Nested(VentaSchema, exclude=('presupuesto',"turno"))
    items = fields.Nested("ItemPresSchema", many=True)
+   fecha = fields.DateTime()
    class Meta:
       fields = ("id","fecha","turnos","cliente","usuario","empleado","items", "total_importe", "cliente_id","empleado_id", "venta_id", "usuario_id")
       load_only = ("cliente_id", "empleado_id", "usuario_id")
@@ -43,10 +46,12 @@ class ItemSchema(BaseSchema):
       allow_none = ("impuesto","bon_gan","precio","precio_costo","precio_venta","ganancia")
 
 class ItemPresSchema(BaseSchema):
+   #descripcion = fields.String(required=True)
    class Meta:
       fields = ("id","item_id","descripcion", "cantidad", "bon_gan", "precio")
       #dump_only = ("id", "item_id")
       unknown = EXCLUDE
       ordered = True
+      required = ('descripcion', 'precio')
       dump_only = ("id",)
       allow_none = ('item_id', 'bon_gan')

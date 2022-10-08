@@ -139,7 +139,16 @@ class ItemVenta(db.Model, BaseModelMixin):
    bon_gan = db.Column(db.Float)
    precio = db.Column(db.Float)
 
-   venta = db.relationship("Venta", lazy='joined', backref="items")
+   #venta = db.relationship("Venta", lazy='joined', backref="items")
+
+   def __init__(self, item = {}, descripcion = None, cantidad = None, bon_gan = None, precio = None, **kwargs):
+      self.descripcion = descripcion or item.descripcion
+      self.precio = precio or item.precio_venta
+      self.cantidad = cantidad or 1
+      self.bon_gan = bon_gan or 0.00
+      self.item = item or None
+   
+   item = db.relationship(Item, lazy="joined")
 
 """
 RELACION: TURNOS/EMPLEADOS, MUCHOS A MUCHOS (UN EMPLEADO PUEDE TENER MUCHOS TURNOS ASIGNADOS Y UN TURNO PUEDE TENER MUCHOS EMPLEADOS)
