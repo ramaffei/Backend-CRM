@@ -8,7 +8,7 @@ from app.modules.turnos.v1_0.schemas import TurnoSchema
 class VentaSchema(BaseSchema):
    cliente = fields.Nested(ClienteSchema)
    #usuario = fields.Nested(UsuarioSchema)
-   empleado = fields.Nested(EmpleadoSchema, exclude=('horarios',))
+   empleado = fields.Nested(EmpleadoSchema, exclude=('horarios','turnos'))
    turnos = fields.Nested(TurnoSchema, many=True, exclude= ('presupuesto_id','venta_id','cliente_id','usuario_id','empleados','cliente'))
    items = fields.Nested("ItemPresSchema", many=True)
    fecha = fields.DateTime()
@@ -23,7 +23,7 @@ class VentaSchema(BaseSchema):
 class PresupuestoSchema(BaseSchema):
    cliente = fields.Nested(ClienteSchema)
    #usuario = fields.Nested(UsuarioSchema)
-   empleado = fields.Nested(EmpleadoSchema, exclude=('horarios',))
+   empleado = fields.Nested(EmpleadoSchema, exclude=('horarios','turnos'))
    turnos = fields.Nested(TurnoSchema, many=True, exclude= ('presupuesto_id','venta_id','cliente_id','usuario_id','empleados','cliente'))
    #venta = fields.Nested(VentaSchema, exclude=('presupuesto',"turno"))
    items = fields.Nested("ItemPresSchema", many=True)

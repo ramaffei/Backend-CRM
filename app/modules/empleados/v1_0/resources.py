@@ -72,6 +72,7 @@ class EmpleadoTodos(Resource):
 class EmpleadoRecurso(Resource):
    def get(self, empleado_id):
       empleado = Empleado.get_by_id(empleado_id)
+      print(empleado.__dict__)
       if empleado is None:
          raise ObjectNotFound('El empleado no existe')
       resp = empleados_schema.dump(empleado)

@@ -5,7 +5,7 @@ from app.modules.clientes.v1_0.schemas import ClienteSchema
 from app.modules.empleados.v1_0.schemas import EmpleadoSchema
 
 class TurnoSchema(BaseSchema):
-   empleados = fields.Nested(EmpleadoSchema, many=True,  exclude=('horarios',))
+   empleados = fields.Nested(EmpleadoSchema, many=True,  exclude=('horarios', 'turnos'))
    cliente = fields.Nested(ClienteSchema)
    cliente_id = fields.Int(allow_none = True)
    venta_id = fields.Int(allow_none = True)
@@ -31,7 +31,7 @@ class TurnoSchema(BaseSchema):
             raise ValidationError("La fecha de fin de no puede ser igual o mayor a la fecha de inicio")
 
 class TurnoEmpleadoSchema(BaseSchema):
-   empleado = fields.Nested('EmpleadoSchema')
+   empleado = fields.Nested('EmpleadoSchema',exclude=('turnos',))
    turno = fields.Nested('TurnoSchema', exclude=('empleados',))
    class Meta:
       fields = ('id_empleado','empleado', 'id_turno', 'turno')

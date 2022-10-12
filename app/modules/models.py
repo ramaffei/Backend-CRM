@@ -161,7 +161,7 @@ class TurnoEmpleado(db.Model, BaseModelMixin):
    id_empleado = db.Column(db.ForeignKey('empleados.id'))
 
    #empleado = db.relationship("Empleado", lazy='joined')
-   empleado = db.relationship('Empleado', backref="turno_empleado", lazy='joined')
+   empleado = db.relationship('Empleado', backref =db.backref("turno_empleado"), lazy='joined')
    #turnos = db.relationship("Turno", lazy='joined', back_populates = 'turno_empleado')
    turno = db.relationship('Turno', backref="turno_empleado",lazy='joined')
 

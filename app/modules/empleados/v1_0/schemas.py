@@ -6,14 +6,14 @@ from app.modules.models import Empleado
 
 class EmpleadoSchema(BaseSchema):
    horarios = fields.Nested('HorarioSchema', many = True, exclude=('empleado', ))
-   #turnos = fields.Nested('TurnoSchema', many=True)
+   turnos = fields.Nested('TurnoSchema', many=True, exclude=('empleados', ))
    class Meta:
-      fields = ('id','nombre','apellido','mail','horarios')
-      dump_only = ('id',)
+      fields = ('id','nombre','apellido','mail','horarios', 'turnos')
+      dump_only = ('id','turnos')
       unknown = EXCLUDE
       ordered = True
 class HorarioSchema(BaseSchema):
-   empleado = fields.Nested('EmpleadoSchema', exclude=('horarios',))
+   empleado = fields.Nested('EmpleadoSchema', exclude=('horarios','turnos'))
    horario_id = fields.Int(attribute = 'id')
    class Meta:
       fields = ('horario_id','dia','hora_entrada','hora_salida', 'empleado')
