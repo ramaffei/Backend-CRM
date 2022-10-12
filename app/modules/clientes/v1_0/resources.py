@@ -11,8 +11,13 @@ clientes_schema = ClienteSchema()
 api = Api(clientes_v1_0_bp)
 
 class ClienteTodos(Resource):
+
    def get(self):
-      clientes = Cliente.get_all()
+      args = request.args.to_dict()
+      if args:
+         clientes = Cliente.simple_filter_all(**args)
+      else:
+         clientes = Cliente.get_all()
       result = clientes_schema.dump(clientes, many=True)
       return result
 
