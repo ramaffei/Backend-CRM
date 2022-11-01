@@ -1,6 +1,4 @@
 import collections
-from pickle import LIST
-from xml.etree.ElementInclude import include
 from flask import request, Blueprint
 from flask_restful import Api, Resource
 
@@ -265,8 +263,7 @@ class VentaListResource(Resource):
             turno = Turno.get_by_id(turno_id)
             if turno is None:
                raise ObjectNotFound(f'No se encuentra item con id {turno_id}')
-            data_turno =turno.buscar_cambios(**turno_dict)
-            print(turno_dict)
+            data_turno = turno.buscar_cambios(**turno_dict)
             turno_dict = turno_schema.load(data_turno, partial=True)
             if len(turno_dict) > 0:
                turno.update(turno_dict)
@@ -281,13 +278,15 @@ class VentaListResource(Resource):
             itemVenta = ItemVenta(item = item, **item_dict)
          else:
             item_dict = item_rel_schema.load(item_dict)
-
             itemVenta = ItemVenta(**item_dict)
+         itemVenta.save()
          items.append(itemVenta)
 
       venta = Venta(**venta_dict)
+      
       venta.items = items
       venta.turnos = turnos
+
       venta.save()
       resp = presupuesto_schema.dump(venta)
       return resp, 201
