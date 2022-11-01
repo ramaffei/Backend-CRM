@@ -6,14 +6,15 @@ from flask_restful import Api, Resource
 
 from app.common.error_handling import ObjectNotFound
 from app.common.util import transformData
-from .schemas import VentaSchema, PresupuestoSchema, ItemSchema, ItemPresSchema
-from ...models import Venta, Presupuesto, ItemPresupuesto, ItemVenta, Item
+from .schemas import VentaSchema, PresupuestoSchema, ItemSchema, ItemPresSchema, TurnoSchema
+from ...models import Turno, Venta, Presupuesto, ItemPresupuesto, ItemVenta, Item
 
 ventas_v1_bp = Blueprint('ventas_v1_0_bp', __name__)
 venta_schema = VentaSchema()
 presupuesto_schema = PresupuestoSchema()
 item_schema = ItemSchema()
 item_rel_schema = ItemPresSchema()
+turno_schema = TurnoSchema()
 
 api = Api(ventas_v1_bp)
 
@@ -253,9 +254,24 @@ class VentaListResource(Resource):
       data = transformData(request.get_json())
       items_dict = data.get('items', [])
       venta_dict = venta_schema.load(data)
- 
-      items = []
+      turnos_dict = data.get('turnos', [])
 
+      items = []
+      turnos = []
+
+      for turno_dict in turnos_dict:
+         turno_id = turno_dict.get('id')
+         if turno_id is not None:
+            turno = Turno.get_by_id(turno_id)
+            if turno is None:
+               raise ObjectNotFound(f'No se encuentra item con id {turno_id}')
+            data_turno =turno.buscar_cambios(**turno_dict)
+            print(turno_dict)
+            turno_dict = turno_schema.load(data_turno, partial=True)
+            if len(turno_dict) > 0:
+               turno.update(turno_dict)
+            turnos.append(turno)
+            
       for item_dict in items_dict:
          item_id = item_dict.get('item_id')
          if item_id is not None:
@@ -271,6 +287,7 @@ class VentaListResource(Resource):
 
       venta = Venta(**venta_dict)
       venta.items = items
+      venta.turnos = turnos
       venta.save()
       resp = presupuesto_schema.dump(venta)
       return resp, 201

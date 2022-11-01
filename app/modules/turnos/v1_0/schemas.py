@@ -22,13 +22,15 @@ class TurnoSchema(BaseSchema):
 
    @validates("fecha_inicio")
    def validar_fechaInicio(self, value):
-      if (value + timedelta(seconds=10)) < datetime.now():
+      if (value + timedelta(seconds=30)) < datetime.now():
          raise ValidationError("La fecha no puede ser anterior a la fecha actual")
    
    @validates_schema
    def validate_numbers(self, data, **kwargs):
-        if data["fecha_fin"] <= data["fecha_inicio"]:
-            raise ValidationError("La fecha de fin de no puede ser igual o mayor a la fecha de inicio")
+      fecha_fin = data.get('fecha_fin')
+      fecha_inicio = data.get('fecha_inicio')
+      if (fecha_fin and fecha_inicio) and fecha_fin <= fecha_inicio:
+         raise ValidationError("La fecha de fin de no puede ser igual o mayor a la fecha de inicio")
 
 class TurnoEmpleadoSchema(BaseSchema):
    empleado = fields.Nested('EmpleadoSchema',exclude=('turnos',))

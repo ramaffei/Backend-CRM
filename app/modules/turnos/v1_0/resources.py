@@ -50,12 +50,13 @@ class TurnoResource(Resource):
          raise ObjectNotFound('El turno no existe')
       data = request.get_json()
       empleados = data.get('empleados', [])
-      del data['empleados']
+      if empleados:
+         del data['empleados']
       
       for empleado in empleados:
          crearRelacionEmpleado(empleado, turno)
 
-      turnos_dict = turnosSchema.load(data)
+      turnos_dict = turnosSchema.load(data, partial=True)
       turno.update(turnos_dict)
       resp = turnosSchema.dump(turno)
       return resp
