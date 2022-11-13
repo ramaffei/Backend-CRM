@@ -17,7 +17,7 @@ class Turno(db.Model, BaseModelMixin):
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
 
    presupuesto = db.relationship("Presupuesto", lazy='joined',backref='turnos')
-   venta = db.relationship("Venta", lazy='joined',backref='turnos')
+   venta = db.relationship("Venta", lazy='joined', back_populates='turnos')
    cliente = db.relationship("Cliente", lazy='joined', back_populates="turnos")
    usuario = db.relationship("Usuario", lazy='joined', back_populates="turnos")
 
@@ -88,8 +88,11 @@ class Venta(db.Model, BaseModelMixin):
    usuario = db.relationship("Usuario", lazy='joined')
    empleado = db.relationship("Empleado", lazy='joined')
    presupuesto = db.relationship("Presupuesto", lazy='joined', backref="venta")
+   
+   turnos = db.relationship("Turno", lazy='joined', cascade="all, delete-orphan",back_populates="venta")
 
    #items
+   items = db.relationship("ItemVenta", cascade="all, delete-orphan", lazy='joined', backref="venta")
 
 class Item(db.Model, BaseModelMixin):
    __tablename__ = 'items'
