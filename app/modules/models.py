@@ -69,6 +69,10 @@ class Presupuesto(db.Model, BaseModelMixin):
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
 
+   cliente = db.relationship("Cliente")
+   usuario = db.relationship("Usuario")
+   empleado = db.relationship("Empleado")
+   
    turnos = db.relationship('Turno')
    venta_id = association_proxy("venta", "id")
 
@@ -84,9 +88,9 @@ class Venta(db.Model, BaseModelMixin):
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
    presupuesto_id = db.Column(db.Integer, db.ForeignKey('presupuestos.id'))
 
-   """    cliente = db.relationship("Cliente", lazy='joined')
-   usuario = db.relationship("Usuario", lazy='joined')
-   empleado = db.relationship("Empleado", lazy='joined') """
+   cliente = db.relationship("Cliente")
+   usuario = db.relationship("Usuario")
+   empleado = db.relationship("Empleado")
 
    presupuesto = db.relationship("Presupuesto", backref=db.backref("venta", uselist=False))
    turnos = db.relationship('Turno')
