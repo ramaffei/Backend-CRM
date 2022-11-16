@@ -14,8 +14,8 @@ class VentaSchema(BaseSchema):
    fecha = fields.DateTime()
    class Meta:
       fields = ("id","fecha","turnos","cliente","usuario","empleado","items", "total_importe", "cliente_id","empleado_id", "presupuesto_id", "usuario_id")
-      load_only = ("cliente_id", "empleado_id", "usuario_id")
-      dump_only = ("id", "cliente", "empleado", "turnos", "usuario", "items")
+      #load_only = ("cliente_id", "empleado_id", "usuario_id")
+      dump_only = ("id", "cliente", "empleado", "turno", "usuario", "items")
       unknown = EXCLUDE
       ordered = True
       allow_none = ('total_importe','cliente_id','empleado_id','presupuesto_id','usuario_id')
@@ -29,8 +29,8 @@ class PresupuestoSchema(BaseSchema):
    items = fields.Nested("ItemPresSchema", many=True)
    fecha = fields.DateTime()
    class Meta:
-      fields = ("id","fecha","turnos","cliente","usuario","empleado","items", "total_importe", "cliente_id","empleado_id", "venta_id", "usuario_id")
-      load_only = ("cliente_id", "empleado_id", "usuario_id")
+      fields = ("id","fecha","turnos","cliente","usuario","empleado","items", "total_importe", "cliente_id","empleado_id",  "venta_id", "usuario_id")
+      #load_only = ("cliente_id", "empleado_id", "usuario_id")
       dump_only = ("id", "cliente", "empleado", "turnos", "usuario", "items")
       unknown = EXCLUDE
       ordered = True

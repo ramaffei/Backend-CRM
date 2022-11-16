@@ -10,18 +10,16 @@ class Turno(db.Model, BaseModelMixin):
    fecha_inicio = db.Column(db.DateTime)
    fecha_fin = db.Column(db.DateTime)
    descripcion = db.Column(db.String(255))
-
-   estado_turno = db.Column(db.String(255))
-
    presupuesto_id = db.Column(db.Integer, db.ForeignKey("presupuestos.id"))
    venta_id = db.Column(db.Integer, db.ForeignKey("ventas.id"))
    cliente_id = db.Column(db.Integer, db.ForeignKey("clientes.id"))
+   estado_turno = db.Column(db.String(255))
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
 
-   #presupuesto = db.relationship("Presupuesto", uselist=False, backref=db.backref('turno'))
-   #venta = db.relationship("Venta")
-   cliente = db.relationship("Cliente")
-   usuario = db.relationship("Usuario")
+   presupuesto = db.relationship("Presupuesto", lazy='joined',backref='turnos')
+   venta = db.relationship("Venta", lazy='joined', back_populates='turnos')
+   cliente = db.relationship("Cliente", lazy='joined', back_populates="turnos")
+   usuario = db.relationship("Usuario", lazy='joined', back_populates="turnos")
 
    empleados = association_proxy("turno_empleado", "empleado")  
 
@@ -69,10 +67,12 @@ class Presupuesto(db.Model, BaseModelMixin):
    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
 
-   turnos = db.relationship('Turno')
-   venta_id = association_proxy("venta", "id")
+   #turno = db.relationship("Turno", lazy='joined', back_populates="presupuesto")
+   cliente = db.relationship("Cliente", lazy='joined')
+   usuario = db.relationship("Usuario", lazy='joined')
+   empleado = db.relationship("Empleado", lazy='joined')
 
-   items = db.relationship("ItemPresupuesto", cascade="all, delete-orphan")
+   items = db.relationship("ItemPresupuesto", cascade="all, delete-orphan", lazy='joined', backref="presupuesto")
 
 class Venta(db.Model, BaseModelMixin):
    __tablename__ = 'ventas'
@@ -84,14 +84,15 @@ class Venta(db.Model, BaseModelMixin):
    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
    presupuesto_id = db.Column(db.Integer, db.ForeignKey('presupuestos.id'))
 
-   """    cliente = db.relationship("Cliente", lazy='joined')
+   cliente = db.relationship("Cliente", lazy='joined')
    usuario = db.relationship("Usuario", lazy='joined')
-   empleado = db.relationship("Empleado", lazy='joined') """
+   empleado = db.relationship("Empleado", lazy='joined')
+   presupuesto = db.relationship("Presupuesto", lazy='joined', backref="venta")
+   
+   turnos = db.relationship("Turno", lazy='joined', cascade="all, delete-orphan",back_populates="venta")
 
-   presupuesto = db.relationship("Presupuesto", backref=db.backref("venta", uselist=False))
-   turnos = db.relationship('Turno')
-
-   items = db.relationship("ItemVenta", cascade="all, delete-orphan")
+   #items
+   items = db.relationship("ItemVenta", cascade="all, delete-orphan", lazy='joined', backref="venta")
 
 class Item(db.Model, BaseModelMixin):
    __tablename__ = 'items'
