@@ -1,6 +1,8 @@
 import collections
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from app.common.util import transform
+from sqlalchemy.orm import ColumnProperty, RelationshipProperty, InstrumentedAttribute
 
 db = SQLAlchemy()
 
@@ -56,8 +58,20 @@ class BaseModelMixin:
                     return obj[0]
 
     @classmethod
-    def get_all(cls):
-        return cls.query.all()
+    def get_all(cls, limit = None, page = None):
+        query = cls.query
+        headers = {
+            'x-count': query.count(),
+        }
+        if limit is not None:
+            query = query.limit(limit)
+            headers['x-limit'] = limit
+        if page is not None:
+            query = query.offset(int(page)*int(limit))
+            headers['x-page'] = page
+            headers['x-total-pages'] = (int(headers['x-count']) // int(limit))+1
+
+        return query.all(), 201, headers
 
     @classmethod
     def get_by_id(cls, id):
@@ -71,3 +85,39 @@ class BaseModelMixin:
     @classmethod
     def simple_filter(cls, **kwargs):
         return cls.query.filter_by(**kwargs).first()
+
+    @classmethod
+    def avanze_filter_all(cls, json, limit = None, page = None):
+        query = cls.query
+        q = False
+        for arg, value in json.items():
+            key=None
+            if '__' in arg:
+                arg = arg.split('__')
+                if len(arg) >= 2:
+                    key = arg[1]
+                    arg = arg[0]
+            column = getattr(cls, arg, None)
+            if isinstance(column, InstrumentedAttribute):
+                q = True
+                if isinstance(column.property, ColumnProperty):
+                    sub_query = query.filter(column == value)
+                    try :
+                        value = datetime.strptime(value, r'%Y-%m-%d')
+                        if key == 'desde': 
+                            sub_query = query.filter(column > value)
+                        elif key == 'hasta':
+                            sub_query = query.filter(column < value)
+                        else:
+                            sub_query = query.filter(column == value)
+                    except Exception:
+                        pass
+                    query = sub_query
+                elif isinstance(column.property, RelationshipProperty):
+                    model = column.property.entity.class_
+                    query = query.join(model).filter(getattr(model, key).like(f'{value}%'))
+        if limit is not None:
+            query = query.limit(limit)
+        if page is not None:
+            query = query.offset(int(page)*int(limit))
+        return query.all() if q else []

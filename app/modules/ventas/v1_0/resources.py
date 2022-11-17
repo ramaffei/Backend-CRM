@@ -1,4 +1,4 @@
-import collections
+
 from flask import request, Blueprint
 from flask_restful import Api, Resource
 
@@ -6,6 +6,8 @@ from app.common.error_handling import ObjectNotFound
 from app.common.util import transformData
 from .schemas import VentaSchema, PresupuestoSchema, ItemSchema, ItemPresSchema, TurnoSchema
 from ...models import Turno, Venta, Presupuesto, ItemPresupuesto, ItemVenta, Item
+
+from sqlalchemy.orm import ColumnProperty, RelationshipProperty, InstrumentedAttribute
 
 ventas_v1_bp = Blueprint('ventas_v1_0_bp', __name__)
 venta_schema = VentaSchema()
@@ -244,10 +246,22 @@ api.add_resource(PresupuestoItemsResource, '/api/v1.0/presupuestos/<int:presupue
 
 class VentaListResource(Resource):
    def get(self):
-      venta = Venta.get_all()
-      result = venta_schema.dump(venta, many=True)
-      return result
-   
+      args = request.args.to_dict()
+      limit, page = None, None
+      if 'limit' in args:
+         limit = args['limit']
+         del args['limit']
+         if 'page' in args:
+            page = args['page']
+            del args['page']
+      if args:
+         print(args)
+         ventas = Venta.avanze_filter_all(args, limit, page)
+      else:
+         ventas, status, headers = Venta.get_all(limit, page)
+      result = venta_schema.dump(ventas, many=True)
+      return result, status, headers
+
    def post(self):
       data = transformData(request.get_json())
       items_dict = data.get('items', [])

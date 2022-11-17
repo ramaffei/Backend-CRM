@@ -1,5 +1,6 @@
 from app.db import db, BaseModelMixin
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import column_property
 
 """
 MODULO TURNO.
@@ -43,6 +44,8 @@ class Empleado(db.Model, BaseModelMixin):
    nombre = db.Column(db.String(255)) 
    apellido = db.Column(db.String(255))
    mail = db.Column(db.String(255))
+
+   nombre_completo = column_property(nombre + " " + apellido)
 
    turnos = association_proxy("turno_empleado", "turno")
    horarios = db.relationship("Horario", lazy='joined', back_populates="empleado")
@@ -186,6 +189,8 @@ class Cliente(db.Model, BaseModelMixin):
    instagram = db.Column(db.String(255))
    twitter = db.Column(db.String(255))
 
+   nombre_completo = column_property(nombre + " " + apellido)
+   
    turnos = db.relationship("Turno", lazy='joined', back_populates="cliente")
 
 """
